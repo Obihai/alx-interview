@@ -1,46 +1,54 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
 import sys
-import datetime
 
 
-def print_stats(file_size, status_counts):
-    print("File size:", file_size)
-    for code, count in sorted(status_counts.items()):
-        print(code, ":", count)
+def print_msg(dict_sc, total_file_size):
+    """
+    Method to print
+    Args:
+        dict_sc: dict of status codes
+        total_file_size: total of the file
+    Returns:
+        Nothing
+    """
+
+    print("File size: {}".format(total_file_size))
+    for key, val in sorted(dict_sc.items()):
+        if val != 0:
+            print("{}: {}".format(key, val))
 
 
-def parse_line(line):
-    parts = line.split()
-    if len(parts) < 7:
-        return None
-    ip_address = parts[0]
-    status_code = parts[-2]
-    file_size = int(parts[-1])
-    return ip_address, status_code, file_size
+total_file_size = 0
+code = 0
+counter = 0
+dict_sc = {"200": 0,
+           "301": 0,
+           "400": 0,
+           "401": 0,
+           "403": 0,
+           "404": 0,
+           "405": 0,
+           "500": 0}
 
+try:
+    for line in sys.stdin:
+        parsed_line = line.split()  # ✄ trimming
+        parsed_line = parsed_line[::-1]  # inverting
 
-def main():
-    file_size = 0
-    status_counts = {}
+        if len(parsed_line) > 2:
+            counter += 1
 
-    try:
-        for i, line in enumerate(sys.stdin, start=1):
-            log_data = parse_line(line.strip())
-            if log_data is None:
-                continue
+            if counter <= 10:
+                total_file_size += int(parsed_line[0])  # file size
+                code = parsed_line[1]  # status code
 
-            ip_address, status_code, size = log_data
-            file_size += size
+                if (code in dict_sc.keys()):
+                    dict_sc[code] += 1
 
-            if status_code.isdigit():
-                status_counts[status_code] = status_counts.get(status_code, 0) + 1
+            if (counter == 10):
+                print_msg(dict_sc, total_file_size)
+                counter = 0
 
-            if i % 10 == 0:
-                print_stats(file_size, status_counts)
-
-    except KeyboardInterrupt:
-        print_stats(file_size, status_counts)
-
-
-if __name__ == '__main__':
-    main()
+finally:
+    print_msg(dict_sc, total_file_size)
