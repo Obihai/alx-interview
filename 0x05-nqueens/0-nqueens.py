@@ -1,35 +1,25 @@
 #!/usr/bin/python3
 """ N queens """
-
 import sys
 
 
-def usage():
-    """ Print usage information and exit """
+if len(sys.argv) > 2 or len(sys.argv) < 2:
     print("Usage: nqueens N")
-    sys.exit(1)
+    exit(1)
 
+if not sys.argv[1].isdigit():
+    print("N must be a number")
+    exit(1)
 
-def check_input():
-    """ Check command-line arguments for validity """
-    if len(sys.argv) != 2:
-        usage()
+if int(sys.argv[1]) < 4:
+    print("N must be at least 4")
+    exit(1)
 
-    n = sys.argv[1]
-    if not n.isdigit():
-        print("N must be a number")
-        sys.exit(1)
-
-    n = int(n)
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    return n
+n = int(sys.argv[1])
 
 
 def queens(n, i=0, a=[], b=[], c=[]):
-    """ Find possible positions for the queens on the chessboard """
+    """ find possible positions """
     if i < n:
         for j in range(n):
             if j not in a and i + j not in b and i - j not in c:
@@ -39,7 +29,7 @@ def queens(n, i=0, a=[], b=[], c=[]):
 
 
 def solve(n):
-    """ Solve the N Queens problem and print all possible solutions """
+    """ solve """
     k = []
     i = 0
     for solution in queens(n, 0):
@@ -51,6 +41,4 @@ def solve(n):
         i = 0
 
 
-if __name__ == "__main__":
-    n = check_input()
-    solve(n)
+solve(n)
